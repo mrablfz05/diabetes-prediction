@@ -14,12 +14,6 @@ diabetes.columns.tolist()
 
 # EDA for Diabetes_012 col
 diabetes_012 = diabetes["Diabetes_012"]
-diabetes_012.describe()
-diabetes_012.unique()
-diabetes_012.isnull().sum()
-diabetes_012.head(10)
-diabetes_012.value_counts()
-diabetes_012.dtype
 
 diabetes_012_counts = diabetes_012.value_counts().reindex([0, 1, 2], fill_value=0)
 
@@ -65,23 +59,12 @@ plt.grid(True, linestyle='--', alpha=0.6)
 plt.tight_layout()
 plt.show()
 
-
-diabetes_012_counts = diabetes_012.value_counts().sort_index()
-diabetes_012_percentages = diabetes_012.value_counts(normalize=True).sort_index() * 100
-diabetes_012_df = pd.DataFrame({
-    "Count": diabetes_012_counts,
-    "Percentage": diabetes_012_percentages.round(2)
-})
-print(diabetes_012_df)
-
 if "BMI" in diabetes.columns:
     print(diabetes.groupby("Diabetes_012")["BMI"].mean())
 
 
 # EDA for HighBP col
 highBp = diabetes["HighBP"]
-highBp.value_counts()
-highBp.describe()
 
 highBp_counts = highBp.value_counts().sort_index()
 highBp_counts.plot(kind='bar', color=["#5DADE2", "#E74C3C"])
@@ -111,7 +94,6 @@ plt.show()
 
 # EDA for HighChol col
 HighChol = diabetes["HighChol"]
-diabetes["HighChol"].describe()
 
 HighChol_counts = HighChol.value_counts().sort_index()
 HighChol_counts.plot(kind='bar', color=["#5DADE2", "#A8E73C"])
@@ -177,10 +159,8 @@ plt.grid(True, linestyle='--', alpha=0.6)
 plt.tight_layout()
 plt.show()
 
-
 # EDA for CholCheck col
 CholCheck = diabetes["CholCheck"]
-diabetes["CholCheck"].describe()
 
 CholCheck_counts = CholCheck.value_counts().reindex([0, 1], fill_value=0)
 
@@ -216,14 +196,6 @@ plt.grid(axis='y', linestyle='--', alpha=0.6)
 plt.tight_layout()
 plt.show()
 
-# functional code instead of repeated them **********************************************
-CholCheck_counts = CholCheck.value_counts().sort_index()
-percentages = CholCheck.value_counts(normalize=True).sort_index() * 100
-CholCheck_df = pd.DataFrame({
-    "Count": CholCheck_counts,
-    "Percentage": percentages.round(2)
-})
-print(CholCheck_df)
 
 plt.figure(figsize=(6, 6))
 stats.probplot(CholCheck, dist="norm", plot=plt)
@@ -234,7 +206,6 @@ plt.show()
 
 # EDA for BMI col
 BMI = diabetes["BMI"]
-diabetes["BMI"].dtype
 
 plt.figure(figsize=(8, 5))
 sns.histplot(BMI, kde=True, color="skyblue", edgecolor="black", bins=100)
@@ -301,7 +272,6 @@ outliers = bmi[(bmi < lower_threshold) | (bmi > upper_threshold)]
 n_outliers = outliers.count()
 
 print(f"Number of outliers: {n_outliers}")
-
 
 # Correlation on dataset
 corr = diabetes.corr(numeric_only=True)
@@ -435,13 +405,6 @@ plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.tight_layout()
 plt.show()
 
-veggies_counts = Veggies.value_counts().sort_index()
-veggies_percentages = Veggies.value_counts(normalize=True).sort_index() * 100
-veggies_df = pd.DataFrame({
-    "Count": veggies_counts,
-    "Percentage": veggies_percentages.round(2)
-})
-print(veggies_df)
 
 # EDA for HvyAlcoholConsump col
 HvyAlcoholConsump = diabetes["HvyAlcoholConsump"]
@@ -542,15 +505,7 @@ plt.show()
 
 # EDA for GenHlth col
 GenHlth = diabetes["GenHlth"]
-
 genhlth_counts = GenHlth.value_counts().sort_index()
-genhlth_percentages = GenHlth.value_counts(normalize=True).sort_index() * 100
-genhlth_df = pd.DataFrame({
-    "Count": genhlth_counts,
-    "Percentage": genhlth_percentages.round(2)
-})
-print(genhlth_df)
-
 labels = ['Excellent (1)', 'Very Good (2)', 'Good (3)', 'Fair (4)', 'Poor (5)']
 
 cmap = plt.cm.PuBuGn_r
@@ -603,14 +558,6 @@ plt.ylabel('Count')
 plt.grid(True, linestyle='--', alpha=0.5)
 plt.tight_layout()
 plt.show()
-
-menthlth_counts = MentHlth.value_counts().sort_index()
-menthlth_percentages = MentHlth.value_counts(normalize=True).sort_index() * 100
-menthlth_df = pd.DataFrame({
-    "Count": menthlth_counts,
-    "Percentage": menthlth_percentages.round(2)
-})
-print(menthlth_df)
 
 MentHlth_skew_val = skew(MentHlth)
 MentHlth_kurt_val = kurtosis(MentHlth)
@@ -681,3 +628,25 @@ plt.title('Distribution of MentHlth by Sex')
 plt.xlabel('Sex (0 = Female, 1 = Male)')
 plt.ylabel('MentHlth Days')
 plt.show()
+
+
+# Summarize percentage of all cols here as new dataframe for better stats
+columns_to_summarize = diabetes.columns
+
+def summarize_column(df, column_name, show=True):
+    counts = df[column_name].value_counts().sort_index()
+    percentages = df[column_name].value_counts(normalize=True).sort_index() * 100
+
+    summary_df = pd.DataFrame({
+        'Count': counts,
+        'Percentage': percentages.round(2)
+    })
+
+    if show:
+        print(f"\n--- {column_name} ---")
+        print(summary_df)
+
+    return summary_df
+
+for col in columns_to_summarize:
+    summarize_column(diabetes, col)
